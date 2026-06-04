@@ -21,7 +21,22 @@
                 <a href="dashboard.html" class="hidden" id="nav-dashboard">Dashboard</a>
             </div>
             <div class="auth-buttons" id="auth-container">
-                <button class="btn btn-outline" onclick="mockLogin()">Sign in with Google</button>
+                <!-- Google Identity Services Widget -->
+                <div id="g_id_onload"
+                     data-client_id="1088000808467-sgpo9hb2cglcjd4h242qcsn36q3s1nod.apps.googleusercontent.com" 
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleGoogleAuth"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left">
+                </div>
             </div>
         </div>
     </nav>
@@ -81,7 +96,7 @@
                     <li>GPT-3.5 / GPT-4o-mini</li>
                     <li>1 Device allowed</li>
                 </ul>
-                <button class="btn btn-outline" style="width: 100%" onclick="mockLoginAndBuy(100)">Buy Now</button>
+                <button class="btn btn-outline" style="width: 100%" onclick="handleBuyClick(100)">Buy Now</button>
             </div>
             
             <div class="card" style="border-color: var(--brand-accent); box-shadow: var(--shadow-md);">
@@ -93,7 +108,7 @@
                     <li>Priority Access</li>
                     <li>1 Device allowed</li>
                 </ul>
-                <button class="btn btn-accent" style="width: 100%" onclick="mockLoginAndBuy(500)">Buy Now</button>
+                <button class="btn btn-outline" style="width: 100%" onclick="handleBuyClick(500)">Buy Now</button>
             </div>
             
             <div class="card">
@@ -105,7 +120,7 @@
                     <li>All Models Available</li>
                     <li>1 Device allowed</li>
                 </ul>
-                <button class="btn btn-outline" style="width: 100%" onclick="mockLoginAndBuy(1000)">Buy Now</button>
+                <button class="btn btn-outline" style="width: 100%" onclick="handleBuyClick(1000)">Buy Now</button>
             </div>
         </div>
     </section>

@@ -3,8 +3,21 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // Check if we need to show billing immediately (from pricing page redirect)
     const urlParams = new URLSearchParams(window.location.search);
+    
     if (urlParams.get('action') === 'billing') {
         showBillingTab();
+        
+        // If a specific pack was passed in the URL, trigger the payment automatically
+        const packSize = urlParams.get('pack');
+        if (packSize) {
+            // Slight delay to ensure UI is loaded before popup appears
+            setTimeout(() => {
+                initRazorpay(parseInt(packSize));
+            }, 500);
+            
+            // Clean up the URL so it doesn't trigger again on refresh
+            window.history.replaceState({}, document.title, "dashboard.html");
+        }
     } else {
         showOverviewTab();
     }
@@ -102,44 +115,57 @@ async function loadDeviceInfo() {
     }
 }
 
-// Mock Razorpay Integration
 window.initRazorpay = async function(credits) {
     try {
-        // 1. Create order
+        // 1. Ask your Rust backend to create a Razorpay Order ID
+        // Note: You must add this endpoint in your Rust backend if you haven't yet!
         const response = await apiCall('/payment/create-order', {
             method: 'POST',
-            body: JSON.stringify({ pack: credits })
+            body: JSON.stringify({ credits: credits })
         });
         
-        if (response.success) {
-            // PLACEHOLDER: This alert represents where the real Razorpay modal opens
-            alert(`[PLACEHOLDER] Razorpay Checkout Modal Opened\n\nBuying ${credits} Credits (₹${response.data.amount/100})\nOrder ID: ${response.data.orderId}`);
-            
-            // 2. Simulate payment success callback hitting backend
-            const confirmRes = await apiCall('/payment/confirm', {
-                method: 'POST',
-                body: JSON.stringify({ credits: credits })
-            });
-
-            if(confirmRes.success) {
-                alert(`Payment Successful! Added ${credits} credits to your account.`);
+        // 2. Open Razorpay Modal using the returned Order ID
+        const options = {
+            key: response.key, // e.g. "rzp_test_xxxxxx" provided by backend
+            amount: response.amount, // in paise
+            currency: response.currency || "INR",
+            name: "Xeyphr",
+            description: `${credits} Credits Pack`,
+            order_id: response.order_id, // The order ID created by backend
+            handler: function (razorpay_res) {
+                // Razorpay captured the payment on the frontend.
+                // Your Rust webhook (/payment/webhook) is currently updating the DB in the background.
+                alert("Payment Processing! Your credits will be updated momentarily.");
                 
-                // Reload UI to show new credits from DB
-                await loadUserProfile();
-                
-                // Add to mock payment history
-                const tbody = document.getElementById('payment-tbody');
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${new Date().toLocaleDateString()}</td>
-                    <td><code style="color:var(--brand-accent)">mock_txn_${Math.random().toString(36).substring(7)}</code></td>
-                    <td>₹${response.data.amount/100}</td>
-                    <td><span class="badge badge-success">Success</span></td>
-                `;
-                tbody.prepend(tr);
+                // Poll/Delay to allow webhook to finish before refreshing UI
+                setTimeout(async () => {
+                    await loadUserProfile(); // Fetch updated credits
+                    
+                    // Reload payment history if you have an endpoint for it
+                    const tbody = document.getElementById('payment-tbody');
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${new Date().toLocaleDateString()}</td>
+                        <td><code style="color:var(--brand-accent)">${razorpay_res.razorpay_payment_id}</code></td>
+                        <td>₹${response.amount/100}</td>
+                        <td><span class="badge badge-success">Success</span></td>
+                    `;
+                    tbody.prepend(tr);
+                }, 3000); 
+            },
+            theme: {
+                color: "#1E293B" // Matches your branding
             }
-        }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (response){
+            alert("Payment failed: " + response.error.description);
+        });
+        rzp.open();
+        
     } catch (e) {
-        alert("Payment initialization failed.");
+        console.error("Payment initialization failed:", e);
+        alert("Failed to connect to payment server.");
     }
 }

@@ -1,55 +1,42 @@
-// auth.js - Authentication Logic tied to Mock Database
+// auth.js - Real Authentication Logic
 
-function mockLogin() {
-    // We display a prompt allowing the tester to pick a user from the mock DB
-    const email = prompt(
-        "MOCK LOGIN ENVIRONMENT\n\nEnter a user email from the database:\n\n- alex@example.com (Active)\n- karthik@xeyphr.com (Active)\n- jane.smith@design.io (Blocked)", 
-        "alex@example.com"
-    );
-    
-    if (!email) return;
-
-    // Fetch DB to validate user
-    let rawDb = localStorage.getItem('mock_db_users');
-    if (!rawDb) {
-        alert("Database not initialized. Please refresh the page.");
-        return;
-    }
-
-    const users = JSON.parse(rawDb);
-    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase().trim());
-
-    if (user) {
-        if (user.status === 'blocked') {
-            alert("Login Failed: Your account has been suspended by an administrator.");
-            return;
-        }
+// Triggered automatically by the Google button when the user logs in
+async function handleGoogleAuth(googleResponse) {
+    try {
+        const res = await apiCall('/auth/google', {
+            method: 'POST',
+            body: JSON.stringify({ credential: googleResponse.credential })
+        });
         
-        // Use user ID as the JWT Token
-        localStorage.setItem('jwt', user.id);
-        window.location.href = 'dashboard.html';
-    } else {
-        alert("Authentication Failed: User not found in database.");
+        if (res.token) {
+            // Save the JWT provided by your Rust backend
+            localStorage.setItem('jwt', res.token);
+            window.location.href = 'dashboard.html';
+        } else {
+            alert('Login failed: ' + (res.message || 'Unknown error'));
+        }
+    } catch (err) {
+        console.error('Auth error', err);
+        alert('Authentication failed. Ensure the backend is running.');
     }
 }
 
-function mockLoginAndBuy(pack) {
-    // Logs user in quickly to Alex, then redirects to billing
-    let rawDb = localStorage.getItem('mock_db_users');
-    if(rawDb) {
-        const users = JSON.parse(rawDb);
-        const user = users[0]; // defaults to Alex Developer
-        localStorage.setItem('jwt', user.id);
-        window.location.href = `dashboard.html?action=billing&pack=${pack}`;
+function handleBuyClick(credits) {
+    if (!localStorage.getItem('jwt')) {
+        alert("Please sign in with Google at the top right before purchasing credits.");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        // Pass the credits as a URL parameter
+        window.location.href = `dashboard.html?action=billing&pack=${credits}`;
     }
 }
 
 function logout() {
-    localStorage.removeItem('jwt');
+    localStorage.removeItem('jwt'); 
     window.location.href = 'index.html';
 }
 
-// Redirect protection
+// Redirect protection for dashboard
 if (window.location.pathname.endsWith('dashboard.html')) {
     if (!localStorage.getItem('jwt')) {
         window.location.href = 'index.html';
