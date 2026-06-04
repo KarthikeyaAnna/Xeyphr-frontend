@@ -1,14 +1,47 @@
-// auth.js - Authentication Logic
+// auth.js - Authentication Logic tied to Mock Database
+
 function mockLogin() {
-    // Simulating Google Auth Login
-    localStorage.setItem('jwt', 'mock_jwt_token_12345');
-    localStorage.setItem('mock_credits', 100);
-    window.location.href = 'dashboard.html';
+    // We display a prompt allowing the tester to pick a user from the mock DB
+    const email = prompt(
+        "MOCK LOGIN ENVIRONMENT\n\nEnter a user email from the database:\n\n- alex@example.com (Active)\n- karthik@xeyphr.com (Active)\n- jane.smith@design.io (Blocked)", 
+        "alex@example.com"
+    );
+    
+    if (!email) return;
+
+    // Fetch DB to validate user
+    let rawDb = localStorage.getItem('mock_db_users');
+    if (!rawDb) {
+        alert("Database not initialized. Please refresh the page.");
+        return;
+    }
+
+    const users = JSON.parse(rawDb);
+    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase().trim());
+
+    if (user) {
+        if (user.status === 'blocked') {
+            alert("Login Failed: Your account has been suspended by an administrator.");
+            return;
+        }
+        
+        // Use user ID as the JWT Token
+        localStorage.setItem('jwt', user.id);
+        window.location.href = 'dashboard.html';
+    } else {
+        alert("Authentication Failed: User not found in database.");
+    }
 }
 
-function mockLoginAndBuy() {
-    localStorage.setItem('jwt', 'mock_jwt_token_12345');
-    window.location.href = 'dashboard.html?action=billing';
+function mockLoginAndBuy(pack) {
+    // Logs user in quickly to Alex, then redirects to billing
+    let rawDb = localStorage.getItem('mock_db_users');
+    if(rawDb) {
+        const users = JSON.parse(rawDb);
+        const user = users[0]; // defaults to Alex Developer
+        localStorage.setItem('jwt', user.id);
+        window.location.href = `dashboard.html?action=billing&pack=${pack}`;
+    }
 }
 
 function logout() {
@@ -16,15 +49,7 @@ function logout() {
     window.location.href = 'index.html';
 }
 
-// Redirect if already logged in and on index page
-if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
-    if (localStorage.getItem('jwt')) {
-        // We do not auto-redirect in this mock to let user see landing page,
-        // but normally we might do window.location.href = 'dashboard.html';
-    }
-}
-
-// Redirect if not logged in and on protected page
+// Redirect protection
 if (window.location.pathname.endsWith('dashboard.html')) {
     if (!localStorage.getItem('jwt')) {
         window.location.href = 'index.html';

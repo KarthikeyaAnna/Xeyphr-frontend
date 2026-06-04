@@ -112,28 +112,32 @@ window.initRazorpay = async function(credits) {
         });
         
         if (response.success) {
-            alert(`Mock Razorpay Checkout Opened for ${credits} Credits (₹${response.data.amount/100})\n\nOrder ID: ${response.data.orderId}`);
+            // PLACEHOLDER: This alert represents where the real Razorpay modal opens
+            alert(`[PLACEHOLDER] Razorpay Checkout Modal Opened\n\nBuying ${credits} Credits (₹${response.data.amount/100})\nOrder ID: ${response.data.orderId}`);
             
-            // Mocking a successful payment by adding credits
-            let currentCredits = parseInt(localStorage.getItem('mock_credits')) || 0;
-            currentCredits += credits;
-            localStorage.setItem('mock_credits', currentCredits);
-            
-            alert(`Payment Successful! Added ${credits} credits to your account.`);
-            
-            // Reload UI
-            await loadUserProfile();
-            
-            // Add to mock payment history
-            const tbody = document.getElementById('payment-tbody');
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${new Date().toLocaleDateString()}</td>
-                <td>mock_txn_${Math.random().toString(36).substring(7)}</td>
-                <td>₹${response.data.amount/100}</td>
-                <td><span class="badge badge-success">Success</span></td>
-            `;
-            tbody.prepend(tr);
+            // 2. Simulate payment success callback hitting backend
+            const confirmRes = await apiCall('/payment/confirm', {
+                method: 'POST',
+                body: JSON.stringify({ credits: credits })
+            });
+
+            if(confirmRes.success) {
+                alert(`Payment Successful! Added ${credits} credits to your account.`);
+                
+                // Reload UI to show new credits from DB
+                await loadUserProfile();
+                
+                // Add to mock payment history
+                const tbody = document.getElementById('payment-tbody');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${new Date().toLocaleDateString()}</td>
+                    <td><code style="color:var(--brand-accent)">mock_txn_${Math.random().toString(36).substring(7)}</code></td>
+                    <td>₹${response.data.amount/100}</td>
+                    <td><span class="badge badge-success">Success</span></td>
+                `;
+                tbody.prepend(tr);
+            }
         }
     } catch (e) {
         alert("Payment initialization failed.");

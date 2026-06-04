@@ -6,25 +6,21 @@
     <title>Xeyphr - Elevate Your Workflow</title>
     <meta name="description" content="The ultimate AI desktop application for professionals. Boost your productivity with seamless AI integration.">
     <link rel="stylesheet" href="css/style.css">
-    <!-- Google Identity Services for Mock Login -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <nav class="navbar">
         <div class="container flex justify-between items-center">
             <div class="logo">
-                <img src="assets/logo-white.svg" alt="Xeyphr Logo">
+                <img src="assets/logo-white.svg" alt="Xeyphr Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM1NTViNmUiLz48L3N2Zz4='">
                 <span class="logo-text">eyphr</span>
             </div>
             <div class="nav-links">
-                <a href="#product">Product</a>
                 <a href="#features">Features</a>
                 <a href="#pricing">Pricing</a>
                 <a href="#faq">FAQ</a>
                 <a href="dashboard.html" class="hidden" id="nav-dashboard">Dashboard</a>
             </div>
             <div class="auth-buttons" id="auth-container">
-                <!-- Google Button will render here -->
                 <button class="btn btn-outline" onclick="mockLogin()">Sign in with Google</button>
             </div>
         </div>
@@ -34,52 +30,42 @@
         <canvas id="hero-canvas"></canvas>
         <div class="container">
             <div class="hero-content">
-            <h1>Your invisible<br>AI copilot for live<br>conversations.</h1>
-            <p>Real-time AI answers during meetings, interviews, and sales calls. With sub-300ms latency, Xeyphr listens, thinks, and feeds you the perfect response before the next sentence even starts.</p>
-            <div class="hero-cta">
-                <button class="btn btn-primary">Download for Windows</button>
-                <button class="btn btn-outline" style="margin-left: 12px;">View Pricing</button>
-            </div>
-        </div>
-        
-        <!-- Trust Banner -->
-        <div class="trust-banner" style="margin-top: 60px; text-align: center; position: relative; z-index: 2;">
-            <p style="color: #6B7280; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;">Trusted by 5,000+ professionals</p>
-            <div class="trust-logos" style="display: flex; justify-content: center; gap: 40px; opacity: 0.4;">
-                <span style="font-weight: 700; font-size: 20px; color: #FFFFFF; font-family: 'Inter', sans-serif;">Google</span>
-                <span style="font-weight: 700; font-size: 20px; color: #FFFFFF; font-family: 'Inter', sans-serif;">Meta</span>
-                <span style="font-weight: 700; font-size: 20px; color: #FFFFFF; font-family: 'Inter', sans-serif;">Stripe</span>
-                <span style="font-weight: 700; font-size: 20px; color: #FFFFFF; font-family: 'Inter', sans-serif;">Amazon</span>
-            </div>
-            <div class="trust-rating" style="margin-top: 16px; color: #EAB308; font-size: 14px;">
-                ★★★★★ <span style="color: #A1A1AA; margin-left: 8px;">4.9/5 from 300+ reviews</span>
-            </div>
-        </div>
-        
-        <!-- Product Mockup Container -->
-        <div class="product-mockup" style="margin-top: 80px; position: relative; z-index: 2; perspective: 1000px;">
-            <div style="width: 100%; max-width: 900px; height: 400px; margin: 0 auto; background: rgba(10, 10, 10, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 1), 0 0 100px rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); transform: rotateX(5deg); display: flex; flex-direction: column; overflow: hidden;">
-                <!-- Mockup Header -->
-                <div style="height: 40px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; align-items: center; padding: 0 16px; gap: 8px;">
-                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #EF4444;"></div>
-                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #F59E0B;"></div>
-                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #10B981;"></div>
-                </div>
-                <!-- Mockup Body -->
-                <div style="flex: 1; padding: 32px; display: flex; flex-direction: column; gap: 16px;">
-                    <div style="width: 60%; height: 24px; background: rgba(255, 255, 255, 0.05); border-radius: 6px;"></div>
-                    <div style="width: 80%; height: 24px; background: rgba(255, 255, 255, 0.05); border-radius: 6px;"></div>
-                    <div style="width: 40%; height: 24px; background: rgba(255, 255, 255, 0.05); border-radius: 6px;"></div>
-                    <div style="margin-top: auto; padding: 16px; background: rgba(255, 255, 255, 0.1); border-radius: 12px; border-left: 4px solid #FFFFFF;">
-                        <p style="color: #FFFFFF; font-family: monospace; font-size: 14px; text-align: left;">> Interviewer: Can you explain how React's virtual DOM works?</p>
-                        <p style="color: #10B981; font-family: monospace; font-size: 14px; margin-top: 8px; text-align: left;">> Xeyphr Copilot: The Virtual DOM is a lightweight JavaScript representation of the actual DOM. React uses a diffing algorithm...</p>
-                    </div>
+                <h1>Your invisible<br>AI copilot for live<br>conversations.</h1>
+                <p>Real-time AI answers during meetings, interviews, and sales calls. With sub-300ms latency, Xeyphr listens, thinks, and feeds you the perfect response before the next sentence even starts.</p>
+                <div class="hero-cta">
+                    <!-- PLACEHOLDER: Download Button -->
+                    <button class="btn btn-primary" onclick="downloadApp()">Download for Windows</button>
+                    <!-- Scrolls to pricing -->
+                    <button class="btn btn-outline" style="margin-left: 12px;" onclick="document.getElementById('pricing').scrollIntoView({behavior: 'smooth'})">View Pricing</button>
                 </div>
             </div>
         </div>
     </header>
 
-    <section id="pricing" class="container mt-8" style="padding: 80px 24px;">
+    <!-- NEW: Features Section -->
+    <section id="features" class="container mt-8" style="padding: 80px 24px;">
+        <div class="text-center mb-8">
+            <h2>Why Choose Xeyphr?</h2>
+            <p>Built for professionals who cannot afford to miss a beat.</p>
+        </div>
+        <div class="grid grid-3">
+            <div class="card" style="text-align: center;">
+                <h3 style="margin-bottom: 12px;">⚡ Sub-300ms Latency</h3>
+                <p>Powered by highly optimized local audio capture and edge-routed LLMs to give you answers instantly.</p>
+            </div>
+            <div class="card" style="text-align: center;">
+                <h3 style="margin-bottom: 12px;">👻 Invisible Overlay</h3>
+                <p>Designed to be completely undetectable on screen shares (Zoom, Meet, Teams). Your secret weapon stays secret.</p>
+            </div>
+            <div class="card" style="text-align: center;">
+                <h3 style="margin-bottom: 12px;">🧠 Context Aware</h3>
+                <p>It doesn't just transcribe; it understands the context of the conversation to give highly relevant technical or sales answers.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="container mt-8" style="padding: 80px 24px; background: rgba(255,255,255,0.02); border-radius: 24px;">
         <div class="text-center mb-8">
             <h2>Simple, transparent pricing</h2>
             <p>Pay only for what you use. No hidden subscriptions.</p>
@@ -95,7 +81,7 @@
                     <li>GPT-3.5 / GPT-4o-mini</li>
                     <li>1 Device allowed</li>
                 </ul>
-                <button class="btn btn-outline" style="width: 100%" onclick="mockLoginAndBuy()">Buy Now</button>
+                <button class="btn btn-outline" style="width: 100%" onclick="mockLoginAndBuy(100)">Buy Now</button>
             </div>
             
             <div class="card" style="border-color: var(--brand-accent); box-shadow: var(--shadow-md);">
@@ -107,7 +93,7 @@
                     <li>Priority Access</li>
                     <li>1 Device allowed</li>
                 </ul>
-                <button class="btn btn-accent" style="width: 100%" onclick="mockLoginAndBuy()">Buy Now</button>
+                <button class="btn btn-accent" style="width: 100%" onclick="mockLoginAndBuy(500)">Buy Now</button>
             </div>
             
             <div class="card">
@@ -119,26 +105,62 @@
                     <li>All Models Available</li>
                     <li>1 Device allowed</li>
                 </ul>
-                <button class="btn btn-outline" style="width: 100%" onclick="mockLoginAndBuy()">Buy Now</button>
+                <button class="btn btn-outline" style="width: 100%" onclick="mockLoginAndBuy(1000)">Buy Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW: FAQ Section -->
+    <section id="faq" class="container mt-8" style="padding: 80px 24px;">
+        <div class="text-center mb-8">
+            <h2>Frequently Asked Questions</h2>
+        </div>
+        <div class="grid" style="max-width: 800px; margin: 0 auto; gap: 16px;">
+            <div class="card" style="padding: 24px;">
+                <h4 style="margin-bottom: 8px;">Is Xeyphr detectable by meeting software?</h4>
+                <p style="font-size: 14px;">No. Xeyphr operates as a discrete desktop overlay utilizing OS-level hardware acceleration bypass. It does not show up in Zoom, Google Meet, or Teams screen shares.</p>
+            </div>
+            <div class="card" style="padding: 24px;">
+                <h4 style="margin-bottom: 8px;">How do credits work?</h4>
+                <p style="font-size: 14px;">1 credit equals roughly 1,000 tokens of generation (combining context and output). Your credits never expire as long as your account is active.</p>
+            </div>
+            <div class="card" style="padding: 24px;">
+                <h4 style="margin-bottom: 8px;">Can I use it on Mac?</h4>
+                <p style="font-size: 14px;">Currently, Xeyphr is optimized specifically for Windows 10/11 environments. Mac support is on our roadmap for Q4.</p>
             </div>
         </div>
     </section>
 
     <footer class="container" style="padding: 40px 24px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-secondary); margin-top: 40px;">
         <p>&copy; 2026 Xeyphr Inc. All rights reserved.</p>
+        <div style="margin-top: 12px; display: flex; justify-content: center; gap: 16px; font-size: 13px;">
+            <a href="#" style="color: var(--text-secondary);">Privacy Policy</a>
+            <a href="#" style="color: var(--text-secondary);">Terms of Service</a>
+            <a href="admin.html" style="color: var(--text-secondary);">Admin Portal</a>
+        </div>
     </footer>
 
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/hero-particles.js"></script>
     <script>
-        // UI logic for index page
+        // Check Auth Status on Load
         document.addEventListener('DOMContentLoaded', () => {
+            // Force initialize DB from api.js if it doesn't exist
+            if(typeof getMockDb === 'function') getMockDb(); 
+
             const token = localStorage.getItem('jwt');
             if (token) {
                 document.getElementById('auth-container').innerHTML = '<button class="btn btn-outline" onclick="logout()">Logout</button>';
                 document.getElementById('nav-dashboard').classList.remove('hidden');
             }
         });
+
+        // PLACEHOLDER: App Download logic
+        function downloadApp() {
+            alert("Download starting...\n\n(Placeholder: Connect this to your AWS S3 bucket or GitHub Releases link later).");
+        }
     </script>
 </body>
 </html>

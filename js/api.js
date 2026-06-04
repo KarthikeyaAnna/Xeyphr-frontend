@@ -1,6 +1,6 @@
 // api.js - Centralized API calls with JWT handling and Mock Data fallback
-const API_BASE = 'https://api.yourdomain.com';
-const USE_MOCK_DATA = true; // Set to true as requested
+const API_BASE = 'https://api.xeyphr.com';
+const USE_MOCK_DATA = false; // Set to true as requested
 
 async function apiCall(endpoint, options = {}) {
     if (USE_MOCK_DATA) {
@@ -115,19 +115,16 @@ async function handleMockApiCall(endpoint, options) {
     const db = getMockDb();
 
     switch(endpoint) {
-        case '/user/profile':
-            return {
-                success: true,
-                data: {
-                    id: 'mock-uuid-1234',
-                    name: 'Alex Developer',
-                    email: 'alex@example.com',
-                    credits: parseInt(localStorage.getItem('mock_credits')) || 100,
-                    status: 'active'
-                }
-            };
+        case '/user/profile': {
+            const currentUser = db.users.find(u => u.id === token);
+            if (currentUser) {
+                return { success: true, data: currentUser };
+            }
+            return { success: false, message: 'User not found' };
+        }
             
         case '/user/history':
+            // Generate deterministic mock history based on user token
             return {
                 success: true,
                 data: [
@@ -137,25 +134,43 @@ async function handleMockApiCall(endpoint, options) {
                 ]
             };
 
-        case '/device/info':
+        case '/device/info': {
+            const currentUser = db.users.find(u => u.id === token);
             return {
                 success: true,
                 data: {
-                    mac_address: 'A1:B2:C3:D4:E5:F6',
-                    last_seen: 'Just now'
+                    mac_address: currentUser && currentUser.device ? currentUser.device : 'Not Registered',
+                    last_seen: currentUser && currentUser.device ? currentUser.lastSeen : 'Never'
                 }
             };
+        }
 
         case '/payment/create-order':
             return {
                 success: true,
                 data: {
                     orderId: 'order_' + Math.random().toString(36).substring(7),
-                    amount: JSON.parse(options.body).pack * 100, // Mock amount calculation
+                    amount: JSON.parse(options.body).pack * 100, // Mock calculation
                     currency: 'INR',
                     key: 'rzp_test_mock_key'
                 }
             };
+            
+        case '/payment/confirm': {
+            const body = JSON.parse(options.body);
+            const user = db.users.find(u => u.id === token);
+            if (user) {
+                user.credits += body.credits;
+                db.logs.unshift({
+                    type: 'success',
+                    text: `${user.name} successfully purchased ${body.credits} credits`,
+                    time: 'Just now'
+                });
+                saveMockDb(db);
+                return { success: true, newCredits: user.credits };
+            }
+            return { success: false, message: 'User not found' };
+        }
 
         // ADMIN ENDPOINTS
         case '/admin/stats':
