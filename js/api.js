@@ -1,6 +1,10 @@
 // api.js - Centralized API calls with JWT handling and Mock Data fallback
 const API_BASE = 'https://api.xeyphr.com';
+<<<<<<< HEAD
 const USE_MOCK_DATA = false; // Set to true as requested
+=======
+const USE_MOCK_DATA = false; // Set to true as requested n
+>>>>>>> 00780001e1c33a26d12166860ebced624837f31f
 
 async function apiCall(endpoint, options = {}) {
     if (USE_MOCK_DATA) {
