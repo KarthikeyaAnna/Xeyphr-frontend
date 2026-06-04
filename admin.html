@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - Xeyphr</title>
+    <link rel="stylesheet" href="css/style.css?v=1.2">
+    <!-- Chart.js CDN for beautiful interactive graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="light-theme">
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="assets/logo.svg?v=3" alt="Xeyphr Logo">
+                <span class="logo-text">eyphr</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-link active" id="tab-overview">Overview</a>
+                <a href="#" class="sidebar-link" id="tab-users">User Management</a>
+                <a href="#" class="sidebar-link" id="tab-coupons">Promo Codes</a>
+                <a href="#" class="sidebar-link" id="tab-analytics">API Analytics</a>
+                <a href="#" class="sidebar-link" id="tab-logs">System Logs</a>
+                <a href="#" class="sidebar-link" id="tab-settings">Settings</a>
+                <a href="#" class="sidebar-link" onclick="adminLogout()" style="margin-top: auto; color: var(--danger);">Logout</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div>
+                    <h2 style="font-size: 24px; font-weight: 600; color: var(--brand-primary);">Admin Command Center</h2>
+                    <p style="font-size: 14px; color: var(--text-secondary);">Manage users, credits, and system activity.</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="badge badge-info" style="font-weight: 600;">Admin Mode</span>
+                </div>
+            </header>
+
+            <!-- Loading Indicator -->
+            <div id="admin-loading" class="text-center" style="padding: 40px; font-weight: 500; color: var(--text-secondary);">
+                Loading admin data...
+            </div>
+
+            <!-- Overview Section -->
+            <section id="section-overview" class="hidden">
+                <div class="grid grid-3 mb-8" id="overview-stats">
+                    <div class="stat-card">
+                        <span class="stat-label">Total Users</span>
+                        <span class="stat-value" id="stat-total-users">--</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Active Devices</span>
+                        <span class="stat-value" id="stat-active-devices">--</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Est. Monthly Revenue</span>
+                        <span class="stat-value" id="stat-mrr">--</span>
+                    </div>
+                </div>
+
+                <div class="grid" style="grid-template-columns: 2fr 1fr; gap: 24px;">
+                    <!-- User Preview -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3>Recent Users</h3>
+                            <button class="btn btn-outline" onclick="switchTab('users')" style="padding: 6px 12px; font-size: 12px;">View All</button>
+                        </div>
+                        <table class="data-table" style="margin-top: 0;">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Credits</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overview-users-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- System Logs Preview -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3>System Logs</h3>
+                            <button class="btn btn-outline" onclick="switchTab('logs')" style="padding: 6px 12px; font-size: 12px;">View All</button>
+                        </div>
+                        <div class="log-feed" id="overview-log-feed">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Management Section -->
+            <section id="section-users" class="hidden">
+                <div class="card">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3>Registered Users</h3>
+                        <div class="flex gap-2">
+                            <input type="text" id="user-search" class="form-input" placeholder="Search user by name or email..." style="width: 280px; padding: 6px 12px; font-size: 13px;">
+                        </div>
+                    </div>
+                    <table class="data-table" style="margin-top: 0;">
+                        <thead>
+                            <tr>
+                                <th>Name / Email</th>
+                                <th>Device MAC</th>
+                                <th>Credits</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Promo Codes Section -->
+            <section id="section-coupons" class="hidden">
+                <div class="grid" style="grid-template-columns: 1.2fr 2fr; gap: 24px;">
+                    <!-- Create Coupon Card -->
+                    <div class="card">
+                        <h3>Create Promo Code</h3>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Issue a new promotional code with credit rewards.</p>
+                        
+                        <form id="coupon-form" onsubmit="createNewCoupon(event)">
+                            <div class="form-group">
+                                <label for="coupon-code">Promo Code</label>
+                                <input type="text" id="coupon-code" class="form-input" placeholder="e.g. SUMMER100" required style="text-transform: uppercase;">
+                            </div>
+                            <div class="form-group">
+                                <label for="coupon-credits">Credits Reward</label>
+                                <input type="number" id="coupon-credits" class="form-input" placeholder="e.g. 100" required min="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="coupon-max-uses">Max Redeems (Limit)</label>
+                                <input type="number" id="coupon-max-uses" class="form-input" placeholder="e.g. 500" value="500" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="coupon-expires">Expiration Date</label>
+                                <input type="date" id="coupon-expires" class="form-input" required value="2026-12-31">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Create Coupon</button>
+                        </form>
+                    </div>
+
+                    <!-- Coupons Table Card -->
+                    <div class="card">
+                        <h3>Active Promotional Codes</h3>
+                        <table class="data-table" style="margin-top: 16px;">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Reward</th>
+                                    <th>Redeems</th>
+                                    <th>Expires</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="coupons-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API Analytics Section -->
+            <section id="section-analytics" class="hidden">
+                <!-- Analytics KPIs -->
+                <div class="grid grid-3 mb-8">
+                    <div class="stat-card">
+                        <span class="stat-label">Total API Cost (7d)</span>
+                        <span class="stat-value" id="stat-api-cost" style="color: var(--danger);">$--</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Gross Margin</span>
+                        <span class="stat-value" id="stat-gross-margin" style="color: var(--success);">--%</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Projected Monthly Cost</span>
+                        <span class="stat-value" id="stat-projected-cost">$--</span>
+                    </div>
+                </div>
+
+                <!-- Alert forecasting -->
+                <div id="analytics-forecast-alert" style="background: #FFFBEB; border: 1px solid #FEF3C7; border-left: 4px solid var(--warning); padding: 16px; border-radius: var(--radius-md); font-size: 14px; margin-bottom: 24px; color: #92400E; display: flex; align-items: center; gap: 12px;">
+                    <div style="font-size: 18px;">⚠️</div>
+                    <div>
+                        <strong>Cost Projection Alert:</strong> Based on the current 7-day token usage velocity, next month's API cost is projected to increase by <strong>18%</strong> due to rapid user expansion. Consider upgrading model routing limits.
+                    </div>
+                </div>
+
+                <!-- Graphs Grid -->
+                <div class="grid" style="grid-template-columns: 2fr 1.2fr; gap: 24px;">
+                    <!-- Token Usage Timeline -->
+                    <div class="card" style="padding: 24px;">
+                        <h3 class="mb-4">Daily Token Volume & Provider Cost</h3>
+                        <div style="position: relative; height: 300px; width: 100%;">
+                            <canvas id="tokenHistoryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Model Distribution -->
+                    <div class="card" style="padding: 24px;">
+                        <h3 class="mb-4">Usage Share by LLM Provider</h3>
+                        <div style="position: relative; height: 260px; width: 100%; display: flex; justify-content: center; align-items: center;">
+                            <canvas id="modelDistributionChart" style="max-height: 250px; max-width: 250px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- System Logs Section -->
+            <section id="section-logs" class="hidden">
+                <div class="card">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3>All Activity Logs</h3>
+                        <button class="btn btn-outline" onclick="clearLogs()" style="padding: 6px 12px; font-size: 12px; color: var(--danger); border-color: rgba(239, 68, 68, 0.2);">Clear History</button>
+                    </div>
+                    <div class="log-feed" id="full-log-feed" style="max-height: 500px;">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="section-settings" class="hidden">
+                <div class="card mb-8">
+                    <h3>System Configurations</h3>
+                    <p style="margin-bottom: 24px;">Adjust primary system options and configuration keys.</p>
+
+                    <div style="max-width: 500px;">
+                        <div class="form-group">
+                            <label for="setting-pricing">Default Starter Plan Pricing (₹)</label>
+                            <input type="number" id="setting-pricing" class="form-input" value="49">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-credits">Default Welcome Credits</label>
+                            <input type="number" id="setting-credits" class="form-input" value="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-maintenance">Maintenance Mode</label>
+                            <select id="setting-maintenance" class="form-input" style="appearance: auto;">
+                                <option value="false">Disabled (System Active)</option>
+                                <option value="true">Enabled (Users Blocked)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSettings()" style="margin-top: 8px;">Save Settings</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Manage Credits Modal -->
+    <div class="modal-overlay" id="credits-modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="credits-modal-title">Adjust User Credits</h3>
+                <button class="modal-close" onclick="closeCreditsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="credits-modal-user-id">
+                <div class="form-group">
+                    <label>User</label>
+                    <div id="credits-modal-username" style="font-weight: 600; color: var(--brand-primary); margin-bottom: 4px;">--</div>
+                    <div id="credits-modal-email" style="font-size: 13px; color: var(--text-secondary);">--</div>
+                </div>
+                <div class="form-group">
+                    <label for="credits-input">Set Balance Credits</label>
+                    <input type="number" id="credits-input" class="form-input" placeholder="e.g. 500">
+                    <span style="font-size: 11px; color: var(--text-secondary); margin-top: 4px; display: inline-block;">Values must be positive integers.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeCreditsModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitCreditsAdjustment()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" style="position: fixed; bottom: 24px; right: 24px; background: var(--brand-primary); color: white; padding: 12px 24px; border-radius: var(--radius-md); font-size: 14px; box-shadow: var(--shadow-lg); transition: all 0.3s ease; opacity: 0; pointer-events: none; z-index: 2000;">
+        Toast message
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js?v=1.2"></script>
+    <script src="js/admin.js?v=1.2"></script>
+</body>
+</html>

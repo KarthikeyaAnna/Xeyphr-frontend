@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Xeyphr</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="light-theme">
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="assets/logo.svg?v=3" alt="Xeyphr Logo">
+                <span class="logo-text">eyphr</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-link active" id="tab-overview">Overview</a>
+                <a href="#" class="sidebar-link" id="tab-billing">Billing & Credits</a>
+                <a href="#" class="sidebar-link" id="tab-device">Device Management</a>
+                <a href="#" class="sidebar-link" onclick="logout()" style="margin-top: auto; color: var(--danger);">Logout</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <header class="dashboard-header">
+                <h2>Welcome back, <span id="user-name">User</span>!</h2>
+                <div style="display: flex; gap: 16px; align-items: center;">
+                    <div style="text-align: right;">
+                        <div style="font-size: 12px; color: var(--text-secondary);">Balance</div>
+                        <div style="font-weight: 600; color: var(--brand-primary);" id="header-credits">-- Credits</div>
+                    </div>
+                    <button class="btn btn-accent" onclick="showBillingTab()">Buy Credits</button>
+                </div>
+            </header>
+
+            <!-- Overview Section -->
+            <section id="section-overview">
+                <div class="grid grid-3 mb-8">
+                    <div class="stat-card">
+                        <span class="stat-label">Available Credits</span>
+                        <span class="stat-value" id="stat-credits">--</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Tokens Used (30d)</span>
+                        <span class="stat-value" id="stat-tokens">--</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Active Device</span>
+                        <span class="stat-value" id="stat-device" style="font-size: 1.25rem; margin-top: auto;">Checking...</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Recent Usage</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Model</th>
+                                <th>Tokens (P+C)</th>
+                                <th>Credits Used</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usage-tbody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Billing Section (Hidden by default) -->
+            <section id="section-billing" class="hidden">
+                <div class="card mb-8">
+                    <h3>Purchase Credits</h3>
+                    <p style="margin-bottom: 24px;">Credits are used to generate AI responses in the desktop app.</p>
+                    
+                    <div class="grid grid-3">
+                        <div class="card" style="border: 1px solid var(--border-color);">
+                            <h4>Starter</h4>
+                            <div class="pricing-price">₹49</div>
+                            <p class="mb-4">100 Credits</p>
+                            <button class="btn btn-outline" style="width: 100%" onclick="initRazorpay(100)">Buy Starter</button>
+                        </div>
+                        <div class="card" style="border: 1px solid var(--brand-accent);">
+                            <h4>Pro</h4>
+                            <div class="pricing-price">₹199</div>
+                            <p class="mb-4">500 Credits</p>
+                            <button class="btn btn-accent" style="width: 100%" onclick="initRazorpay(500)">Buy Pro</button>
+                        </div>
+                        <div class="card" style="border: 1px solid var(--border-color);">
+                            <h4>Power</h4>
+                            <div class="pricing-price">₹349</div>
+                            <p class="mb-4">1000 Credits</p>
+                            <button class="btn btn-outline" style="width: 100%" onclick="initRazorpay(1000)">Buy Power</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Payment History</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Transaction ID</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payment-tbody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Device Section (Hidden by default) -->
+            <section id="section-device" class="hidden">
+                <div class="card">
+                    <h3>Registered Device</h3>
+                    <p style="margin-bottom: 24px;">Your account is locked to a single desktop device for security. If you change computers, you must contact support or reset it if eligible.</p>
+                    
+                    <div style="background: var(--bg-color); padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Primary Workstation</div>
+                                <div style="color: var(--text-secondary); font-family: monospace;" id="device-mac">--:--:--:--:--:--</div>
+                                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">Last seen: <span id="device-last-seen">Never</span></div>
+                            </div>
+                            <span class="badge badge-success">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Razorpay Checkout JS -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
